@@ -52,7 +52,7 @@ const usuario = new Usuario({
 const ProdutocozinhaSchema = new mongoose.Schema({
 id_produtocozinha : {type : String},
 descricao : {type : String},
-marca : {type : String, required : true},
+marca : {type : String},
 data_fabricacao : {type : Date, required : true},
 quantidade_estoque : {type : Number},
 });
@@ -60,7 +60,7 @@ quantidade_estoque : {type : Number},
 const Produtocozinha = mongoose.model("Produtocozinha", ProdutocozinhaSchema);
 
 //configurando os roteamentos
-app.post("/cadastroproduto", async(req, res)=>{
+app.post("/cadastroprodutocozinha", async(req, res)=>{
     const id_produtocozinha = req.body.id_produtocozinha;
     const descricao = req.body.descricao;
     const marca = req.body.marca;
@@ -76,14 +76,27 @@ const produtocozinha = new Produtocozinha({
         quantidade_estoque : quantidade_estoque
     
     })
+    if(quantidade_estoque> 34){
+        return res.status(400).json({error : "Acabou o estoque, não é possivel cadastrar mais!"});
+    }
+    else if(quantidade_estoque <= 0){
+        return res.status(400).json({error : "Você digitou um valor de estoque inválido. Insira um valor de estoque entre 1 e 34. "});
+    }
 
     try{
         const newProdutocozinha = await produtocozinha.save();
         res.json({error : null, msg : "Cadastro ok", ProdutocozinhaId : newProdutocozinha._id});
     } catch(error){
        }
-
+     
 });
+app.get("/cadastrousuario", async (req, res) => {
+    res.sendFile(__dirname + "/cadastrousuario.html");
+  });
+
+  app.get("/cadastroprodutocozinha", async (req, res) => {
+    res.sendFile(__dirname + "/cadastroprodutocozinha.html");
+  });
 
 
 app.get("/", async(req, res)=>{
